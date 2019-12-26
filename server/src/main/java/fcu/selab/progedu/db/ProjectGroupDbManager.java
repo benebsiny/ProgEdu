@@ -187,4 +187,21 @@ public class ProjectGroupDbManager {
     }
   }
 
+  /**
+   * remove Project_Group by gid
+   * 
+   * @param gid group id
+   */
+  public void removeByPgid(int pgid) {
+    String sql = "DELETE FROM Project_Group WHERE id=?";
+    try (Connection conn = database.getConnection();
+        PreparedStatement preStmt = conn.prepareStatement(sql)) {
+      preStmt.setInt(1, pgid);
+      preStmt.executeUpdate();
+    } catch (SQLException e) {
+      LOGGER.debug(ExceptionUtil.getErrorInfoFromException(e));
+      LOGGER.error(e.getMessage());
+    }
+  }
+
 }
