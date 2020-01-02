@@ -41,4 +41,30 @@ public class MySqlDatabase implements IDatabase {
     }
     return con;
   }
+
+  /**
+   * 
+   * @param url 1
+   * @return 1
+   */
+  public Connection getConnection(String url) {
+
+    try {
+      Class.forName(DB_DRIVER);
+    } catch (ClassNotFoundException e) {
+      LOGGER.debug(ExceptionUtil.getErrorInfoFromException(e));
+      LOGGER.error(e.getMessage());
+    }
+    try {
+      String connection = MySqlDbConfig.getInstance().getDbConnectionString(url);
+      String user = MySqlDbConfig.getInstance().getDbUser();
+      String password = MySqlDbConfig.getInstance().getDbPassword();
+      con = DriverManager.getConnection(connection, user, password);
+
+    } catch (SQLException | LoadConfigFailureException e) {
+      LOGGER.debug(ExceptionUtil.getErrorInfoFromException(e));
+      LOGGER.error(e.getMessage());
+    }
+    return con;
+  }
 }

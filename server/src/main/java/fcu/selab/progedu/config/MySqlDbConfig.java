@@ -131,4 +131,15 @@ public class MySqlDbConfig {
     }
     return "?relaxAutoCommit=true&useSSL=false&useUnicode=true&characterEncoding=utf-8";
   }
+
+  /**
+   * Get database connection string
+   * 
+   * @param url 1
+   * @return db_connection 1
+   * @throws LoadConfigFailureException on properties call error 1
+   */
+  public String getDbConnectionString(String url) throws LoadConfigFailureException {
+    return "jdbc:mysql://" + url + "/" + getDbSchema() + getDbConnectionOption();
+  }
 }

@@ -18,7 +18,7 @@
         </userRemoteConfigs>
         <branches>
             <hudson.plugins.git.BranchSpec>
-                <name>*/master</name>
+                <name>*/rebuild</name>
             </hudson.plugins.git.BranchSpec>
         </branches>
         <doGenerateSubmoduleConfigurations>false</doGenerateSubmoduleConfigurations>
@@ -53,7 +53,7 @@
             <cancelPendingBuildsOnUpdate>false</cancelPendingBuildsOnUpdate>
         </com.dabsquared.gitlabjenkins.GitLabPushTrigger>
     </triggers>
-    <concurrentBuild>false</concurrentBuild>
+    <concurrentBuild>true</concurrentBuild>
     <builders>
         <io.jenkins.plugins.screenshot.ScreenShotBuilder plugin="sceenshot@1.0-SNAPSHOT">
             <seleniumUrl>http://example.com/wd/hub</seleniumUrl>

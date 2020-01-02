@@ -183,16 +183,28 @@ public class ProjectDbService {
     pcrdb.insertProjectCommitRecord(pgId, commitNumber, status, time, committer);
   }
 
-//
-//public List<GroupProject> getProjects(String groupName) {
-//  List<GroupProject> gps = new ArrayList<>();
-//  int gid = gdb.getId(groupName);
-//  List<Integer> pids = pgdb.getPids(gid);
-//
-//  for (int pid : pids) {
-//    pdb.getGroupProject(pid);
-//  }
-//
-//  return null;
-//}
+  // rebuild
+
+  /**
+   * get last commit record
+   * 
+   * @param pgid project_group id
+   * @return last commit record
+   */
+  public CommitRecord getCommitResult(int pgid, String url) {
+    return pcrdb.getLastProjectCommitRecord(pgid, url);
+  }
+
+  /**
+   * get pgid
+   * 
+   * @param groupName   group name
+   * @param projectName project name
+   * @return project_group id
+   */
+  public int getPgid(String groupName, String projectName, String url) {
+    int gid = gdb.getId(groupName, url);
+    int pid = pdb.getId(projectName, url);
+    return pgdb.getId(gid, pid, url);
+  }
 }

@@ -34,8 +34,8 @@ import fcu.selab.progedu.data.User;
 import fcu.selab.progedu.db.service.GroupDbService;
 import fcu.selab.progedu.db.service.UserDbService;
 import fcu.selab.progedu.exception.LoadConfigFailureException;
-import fcu.selab.progedu.utils.Linux;
 import fcu.selab.progedu.utils.ExceptionUtil;
+import fcu.selab.progedu.utils.Linux;
 
 public class GitlabService {
   private static GitlabService instance = new GitlabService();
@@ -804,6 +804,22 @@ public class GitlabService {
       LOGGER.error(e.getMessage());
     }
 
+  }
+
+  /**
+   * get commits from gitlab project. (to do)
+   * 
+   * @param username    project's (to do)
+   * @param projectName project's (to do)
+   * @param gitlabUrl
+   */
+  public String cloneProject(String username, String projectName, String gitlabUrl) {
+    String repoUrl = gitlabUrl + "/" + username + "/" + projectName + ".git";
+    String target = System.getProperty("java.io.tmpdir") + "/uploads/" + projectName;
+    String cloneCommand = "git clone " + repoUrl + " " + target;
+    Linux linux = new Linux();
+    linux.execLinuxCommand(cloneCommand);
+    return target;
   }
 
 }

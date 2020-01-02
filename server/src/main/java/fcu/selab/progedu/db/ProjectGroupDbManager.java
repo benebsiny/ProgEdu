@@ -203,5 +203,31 @@ public class ProjectGroupDbManager {
       LOGGER.error(e.getMessage());
     }
   }
+  // rebuild
 
+  /**
+   * get pgId by project Id and group Id
+   * 
+   * @param pid Project Id
+   * @param gid Group Id
+   * @return pgId projectGroup Id
+   */
+  public int getId(int gid, int pid, String url) {
+    int pgid = 0;
+    String sql = "SELECT id FROM Project_Group WHERE pId=? AND gId=?";
+    try (Connection conn = ((MySqlDatabase) database).getConnection(url);
+        PreparedStatement preStmt = conn.prepareStatement(sql)) {
+      preStmt.setInt(1, pid);
+      preStmt.setInt(2, gid);
+      try (ResultSet rs = preStmt.executeQuery()) {
+        while (rs.next()) {
+          pgid = rs.getInt("id");
+        }
+      }
+    } catch (SQLException e) {
+      LOGGER.debug(ExceptionUtil.getErrorInfoFromException(e));
+      LOGGER.error(e.getMessage());
+    }
+    return pgid;
+  }
 }

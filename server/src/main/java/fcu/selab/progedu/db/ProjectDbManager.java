@@ -249,4 +249,30 @@ public class ProjectDbManager {
     }
   }
 
+  //////////// rebuild///////
+  /**
+   * get project id by project name
+   * 
+   * @param projectName project name
+   * @return id project id
+   */
+  public int getId(String projectName, String url) {
+    String query = "SELECT id FROM Project WHERE name = ?";
+    int id = -1;
+
+    try (Connection conn = ((MySqlDatabase) database).getConnection(url);
+        PreparedStatement preStmt = conn.prepareStatement(query)) {
+      preStmt.setString(1, projectName);
+      try (ResultSet rs = preStmt.executeQuery();) {
+        while (rs.next()) {
+          id = rs.getInt("id");
+        }
+      }
+    } catch (SQLException e) {
+      LOGGER.debug(ExceptionUtil.getErrorInfoFromException(e));
+      LOGGER.error(e.getMessage());
+    }
+    return id;
+  }
+
 }

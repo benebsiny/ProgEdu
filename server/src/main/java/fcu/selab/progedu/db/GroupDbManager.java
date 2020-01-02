@@ -27,14 +27,15 @@ public class GroupDbManager {
 
   private UserDbManager udb = UserDbManager.getInstance();
 
-  private GroupDbManager() {}
+  private GroupDbManager() {
+  }
 
   /**
    * add groupinto db
    *
-   * @param gitlabId gitlabId
+   * @param gitlabId  gitlabId
    * @param groupName groupName
-   * @param leaderId leaderId
+   * @param leaderId  leaderId
    */
   public void addGroup(int gitlabId, String groupName, int leaderId) {
     String sql = "INSERT INTO ProgEdu.Group(gitLabId, name, leader) " + "VALUES(?, ?, ?)";
@@ -126,7 +127,7 @@ public class GroupDbManager {
   /**
    * update leader
    *
-   * @param id group id
+   * @param id     group id
    * @param leader leader uid
    */
   public void updateLeader(int id, int leader) {
@@ -253,5 +254,30 @@ public class GroupDbManager {
       LOGGER.debug(ExceptionUtil.getErrorInfoFromException(e));
       LOGGER.error(e.getMessage());
     }
+  }
+
+  ///////////// rebuild///////
+  /**
+   * get id
+   *
+   * @param name name
+   */
+  public int getId(String name, String url) {
+    int id = -1;
+    String statement = "SELECT id FROM ProgEdu.Group WHERE name = ?";
+
+    try (Connection conn = ((MySqlDatabase) database).getConnection(url);
+        PreparedStatement preStmt = conn.prepareStatement(statement)) {
+      preStmt.setString(1, name);
+      try (ResultSet rs = preStmt.executeQuery()) {
+        if (rs.next()) {
+          id = rs.getInt("id");
+        }
+      }
+    } catch (SQLException e) {
+      LOGGER.debug(ExceptionUtil.getErrorInfoFromException(e));
+      LOGGER.error(e.getMessage());
+    }
+    return id;
   }
 }
