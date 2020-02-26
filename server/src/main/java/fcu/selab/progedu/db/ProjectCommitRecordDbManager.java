@@ -13,6 +13,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import fcu.selab.progedu.data.CommitRecord;
+import fcu.selab.progedu.data.StudentCommitRecord;
 import fcu.selab.progedu.status.StatusEnum;
 import fcu.selab.progedu.utils.ExceptionUtil;
 
@@ -320,5 +321,67 @@ public class ProjectCommitRecordDbManager {
       LOGGER.error(e.getMessage());
     }
     return cr;
+  }
+
+  /**
+   * get project's CommitRecordId
+   *
+   * @param pgId         Project_Commit_Record pgId
+   * @param commitNumber commit number
+   * @return id
+   */
+  public void getCommitStatusPerStudent() {
+    List<StudentCommitRecord> scrs = new ArrayList<>();
+    String query = "SELECT pgId, commitStudent, status, count(*) FROM ProgEdu.Project_Commit_Record where status <> 4 group by ProgEdu.Project_Commit_Record.pgId, commitStudent, status;";
+
+    try (Connection conn = database.getConnection();
+        PreparedStatement preStmt = conn.prepareStatement(query)) {
+      try (ResultSet rs = preStmt.executeQuery();) {
+        while (rs.next()) {
+          int pgId = rs.getInt("pgId");
+          String commitStudent = rs.getString("commitStudent");
+          int status = rs.getInt("status");
+          int count = rs.getInt("count(*)");
+          StudentCommitRecord scr;
+          if (scrs.size() > 0 && scrs.get(scrs.size() - 1).getName().equals(commitStudent)
+              && scrs.get(scrs.size() - 1).getPgId() == pgId) {
+            scr = scrs.get(scrs.size() - 1);
+          } else {
+            scr = new StudentCommitRecord(pgId, commitStudent);
+            scrs.add(scr);
+          }
+
+          switch (status) {
+            case 1:
+              scrs.get(scrs.size() - 1).setNumOfBs(count);
+              break;
+            case 6:
+              scrs.get(scrs.size() - 1).setNumOfWhf(count);
+              break;
+            case 7:
+              scrs.get(scrs.size() - 1).setNumOfWsf(count);
+              break;
+            case 8:
+              scrs.get(scrs.size() - 1).setNumOfWef(count);
+              break;
+            default:
+              break;
+          }
+
+//          System.out.print(pgId + ", ");
+//          System.out.print(commitStudent + ", ");
+//          System.out.print(status + ", ");
+//          System.out.println(count);
+        }
+      }
+    } catch (SQLException e) {
+      LOGGER.debug(ExceptionUtil.getErrorInfoFromException(e));
+      LOGGER.error(e.getMessage());
+    }
+    System.out.println(scrs.size());
+    for (StudentCommitRecord scr : scrs) {
+      System.out.println(scr.toString());
+    }
+
   }
 }
