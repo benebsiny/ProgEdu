@@ -324,13 +324,11 @@ public class ProjectCommitRecordDbManager {
   }
 
   /**
-   * get project's CommitRecordId
-   *
-   * @param pgId         Project_Commit_Record pgId
-   * @param commitNumber commit number
+   * get project's Commit status per student
+   * 
    * @return id
    */
-  public void getCommitStatusPerStudent() {
+  public List<StudentCommitRecord> getCommitStatusPerStudent() {
     List<StudentCommitRecord> scrs = new ArrayList<>();
     String query = "SELECT pgId, commitStudent, status, count(*) FROM ProgEdu.Project_Commit_Record where status <> 4 group by ProgEdu.Project_Commit_Record.pgId, commitStudent, status;";
 
@@ -341,7 +339,8 @@ public class ProjectCommitRecordDbManager {
           int pgId = rs.getInt("pgId");
           String commitStudent = rs.getString("commitStudent");
           int status = rs.getInt("status");
-          int count = rs.getInt("count(*)");
+          int times = rs.getInt("count(*)");
+//          System.out.println(pgId + "\t" + commitStudent + "\t" + status + "\t" + times);
           StudentCommitRecord scr;
           if (scrs.size() > 0 && scrs.get(scrs.size() - 1).getName().equals(commitStudent)
               && scrs.get(scrs.size() - 1).getPgId() == pgId) {
@@ -353,16 +352,16 @@ public class ProjectCommitRecordDbManager {
 
           switch (status) {
             case 1:
-              scrs.get(scrs.size() - 1).setNumOfBs(count);
+              scrs.get(scrs.size() - 1).setNumOfBs(times);
               break;
             case 6:
-              scrs.get(scrs.size() - 1).setNumOfWhf(count);
+              scrs.get(scrs.size() - 1).setNumOfWhf(times);
               break;
             case 7:
-              scrs.get(scrs.size() - 1).setNumOfWsf(count);
+              scrs.get(scrs.size() - 1).setNumOfWsf(times);
               break;
             case 8:
-              scrs.get(scrs.size() - 1).setNumOfWef(count);
+              scrs.get(scrs.size() - 1).setNumOfWef(times);
               break;
             default:
               break;
@@ -378,10 +377,61 @@ public class ProjectCommitRecordDbManager {
       LOGGER.debug(ExceptionUtil.getErrorInfoFromException(e));
       LOGGER.error(e.getMessage());
     }
-    System.out.println(scrs.size());
-    for (StudentCommitRecord scr : scrs) {
-      System.out.println(scr.toString());
+//    System.out.println(scrs.size());
+//    for (StudentCommitRecord scr : scrs) {
+//      System.out.println(scr.toString());
+//    }
+    return scrs;
+  }
+
+  /**
+   * get project's Commit status per student
+   * 
+   * @return id
+   */
+  public void getCommitFrequencyPerStudent(List<StudentCommitRecord> scrs) {
+//    List<StudentCommitRecord> scrs = new ArrayList<>();
+    String query = "SELECT pgId, commitStudent, time FROM ProgEdu.Project_Commit_Record where status <> 4 group by ProgEdu.Project_Commit_Record.pgId, commitStudent, ProgEdu.Project_Commit_Record.time;";
+    try (Connection conn = database.getConnection();
+        PreparedStatement preStmt = conn.prepareStatement(query)) {
+      try (ResultSet rs = preStmt.executeQuery();) {
+        while (rs.next()) {
+          int pgId = rs.getInt("pgId");
+          String commitStudent = rs.getString("commitStudent");
+          Date time = rs.getTimestamp("time");
+//          System.out.print(pgId + ", ");
+//          System.out.print(commitStudent + ", ");
+//          System.out.println(time);
+//        System.out.println(count);
+//          int times = rs.getInt("count(*)");
+          StudentCommitRecord scr = null;
+          for (StudentCommitRecord cr : scrs) {
+            if (cr.getName().equals(commitStudent) && cr.getPgId() == pgId) {
+              scr = cr;
+              break;
+            }
+          }
+          if (scr == null) {
+            scr = new StudentCommitRecord(pgId, commitStudent);
+            scrs.add(scr);
+          }
+          scr.addCommitTime(time);
+
+//          System.out.print(pgId + ", ");
+//          System.out.print(commitStudent + ", ");
+//          System.out.print(status + ", ");
+//          System.out.println(count);
+        }
+      }
+    } catch (SQLException e) {
+      LOGGER.debug(ExceptionUtil.getErrorInfoFromException(e));
+      LOGGER.error(e.getMessage());
     }
+//    System.out.println(scrs.size());
+//    for (StudentCommitRecord scr : scrs) {
+////      System.out.println(scr.toString());
+//      System.out.println(scr.getCommitFrequency() + "\n");
+//    }
 
   }
 }
