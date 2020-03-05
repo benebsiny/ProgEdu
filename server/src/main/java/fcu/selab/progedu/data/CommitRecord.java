@@ -76,4 +76,11 @@ public class CommitRecord {
     this.committer = committer;
   }
 
+  public String toString() {
+    return "\nid : " + this.getId() + "\n" + "auId : " + this.getAuId() + "\n" + "status : "
+        + this.getStatus() + "\n" + "number : " + this.getNumber() + "\n" + "message : "
+        + this.getMessage() + "\n" + "time : " + this.getTime() + "\n" + "committer : "
+        + this.getCommitter() + "\n";
+  }
+
 }

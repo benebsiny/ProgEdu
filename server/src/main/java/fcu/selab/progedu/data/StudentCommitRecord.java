@@ -13,6 +13,11 @@ public class StudentCommitRecord {
   private int numOfWhf;
   private int numOfWsf;
   private List<Date> commitTimes;
+  private int numOfFailed;
+  private int numOfAllFixed;
+  private int numOfPartiallyFixed;
+  private int numOfNotFixed;
+  private int numOfSuccess;
 
   public StudentCommitRecord(int groupId, String name) {
     this.pgId = groupId;
@@ -84,6 +89,46 @@ public class StudentCommitRecord {
     return this.getNumOfBs() + this.getNumOfWef() + this.getNumOfWhf() + this.getNumOfWsf();
   }
 
+  public int getNumOfFailed() {
+    return numOfFailed;
+  }
+
+  public void addNumOfFailed() {
+    this.numOfFailed++;
+  }
+
+  public int getNumOfAllFixed() {
+    return numOfAllFixed;
+  }
+
+  public void addNumOfAllFixed() {
+    this.numOfAllFixed++;
+  }
+
+  public int getNumOfPartiallyFixed() {
+    return numOfPartiallyFixed;
+  }
+
+  public void addNumOfPartiallyFixed() {
+    this.numOfPartiallyFixed++;
+  }
+
+  public int getNumOfNotFixed() {
+    return numOfNotFixed;
+  }
+
+  public void addNumOfNotFixed() {
+    this.numOfNotFixed++;
+  }
+
+  public int getNumOfSuccess() {
+    return numOfSuccess;
+  }
+
+  public void addNumOfSuccess() {
+    this.numOfSuccess++;
+  }
+
   public String getCommitFrequency() {
     List<Date> dates = this.getCommitTimes();
     long timeDiff = dates.get(dates.size() - 1).getTime() - dates.get(0).getTime();
@@ -117,10 +162,14 @@ public class StudentCommitRecord {
   }
 
   public String toString() {
-    return "pgId \t\t: " + this.getPgId() + "\n" + "name \t\t: " + this.getName() + "\n"
+    return "\npgId \t\t: " + this.getPgId() + "\n" + "name \t\t: " + this.getName() + "\n"
         + "numOfCommits \t: " + this.getNumOfCommits() + "\n" + "numOfBs \t: " + this.getNumOfBs()
         + "\n" + "numOfWhf \t: " + this.getNumOfWhf() + "\n" + "numOfWsf \t: " + this.getNumOfWsf()
-        + "\n" + "numOfWef \t: " + this.getNumOfWef() + "\n" + this.getCommitFrequency() + "\n";
+        + "\n" + "numOfWef \t: " + this.getNumOfWef() + "\n" + this.getCommitFrequency() + "\n"
+        + "numOfSuccess \t\t:" + this.getNumOfSuccess() + "\n" + "numOfAllFixed \t\t:"
+        + this.getNumOfAllFixed() + "\n" + "numOfPartiallyFixed \t:" + this.getNumOfPartiallyFixed()
+        + "\n" + "numOfNotFixed \t\t:" + this.getNumOfNotFixed() + "\n" + "numOfFailed \t\t:"
+        + this.getNumOfFailed() + "\n";
   }
 
 }

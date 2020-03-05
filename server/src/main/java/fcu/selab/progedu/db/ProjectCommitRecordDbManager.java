@@ -284,7 +284,8 @@ public class ProjectCommitRecordDbManager {
     return status;
   }
 
-  /////////////// rebuild////////
+  /* -------------------rebuild------------------- */
+
   /**
    * get last project commit record details from assigned homework of one student
    *
