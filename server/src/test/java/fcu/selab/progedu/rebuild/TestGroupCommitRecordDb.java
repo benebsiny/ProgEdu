@@ -40,28 +40,29 @@ public class TestGroupCommitRecordDb {
 
   @Test
   public void test() {
-    String groupName = "TeamA1";
-    String projectName = "ProjectA1";
-    int pgid = pdm.getPgid(groupName, projectName);
-    List<CommitRecord> crs = pdm.getCommitRecords(pgid);
+//    String groupName = "TeamA1";
+//    String projectName = "ProjectA1";
+    List<Integer> pgids = pgdm.getPgids();
+//    List<CommitRecord> crs = pdm.getCommitRecords(pgid);
 //    System.out.println(crs.toString());
     List<StudentCommitRecord> scrs = crdm.getCommitStatusPerStudent();
 //  crdm.getCommitStatusPerStudent();
     crdm.getCommitFrequencyPerStudent(scrs);
-    System.out.println(scrs.size());
+//    System.out.println(scrs.size());
 
     List<StudentCommitRecord> delete = new ArrayList<>();
-    for (StudentCommitRecord scr : scrs) {
-      System.out.println("1");
-      if (scr.getPgId() != pgid) {
-        delete.add(scr);
-        System.out.println("s");
-      }
+    for (int pgid : pgids) {
+      List<CommitRecord> crs = pdm.getCommitRecords(pgid);
+//      for (int index = 0 ; index < scrs.size(); index++) {
+//        System.out.println("1");
+//        if (scrs.get(index).getPgId() != pgid) {
+//        }
+//      }
+//      System.out.println(scrs.size());
+      ca.analyzeCommitBehavior(crs, scrs);
     }
-    scrs.removeAll(delete);
-    System.out.println(scrs.size());
-    List<StudentCommitRecord> scrs2 = ca.analyzeCommitBehavior(crs, scrs);
-    System.out.println(scrs2.toString());
+
+    System.out.println(scrs.toString());
   }
 
 }

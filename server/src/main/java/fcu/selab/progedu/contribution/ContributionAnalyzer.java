@@ -7,8 +7,7 @@ import fcu.selab.progedu.data.StudentCommitRecord;
 import fcu.selab.progedu.status.StatusEnum;
 
 public class ContributionAnalyzer {
-  public List<StudentCommitRecord> analyzeCommitBehavior(List<CommitRecord> crs,
-      List<StudentCommitRecord> scrs) {
+  public void analyzeCommitBehavior(List<CommitRecord> crs, List<StudentCommitRecord> scrs) {
     CommitRecord prevCr = null;
     for (CommitRecord cr : crs) {
       StudentCommitRecord scr = getStudentCommitRecord(cr.getCommitter(), scrs);
@@ -27,12 +26,11 @@ public class ContributionAnalyzer {
           scr.addNumOfFailed();
         } else {
           // unexpected error
-          return null;
+//          return null;
         }
       }
       prevCr = cr;
     }
-    return scrs;
   }
 
   private StudentCommitRecord getStudentCommitRecord(String committer,

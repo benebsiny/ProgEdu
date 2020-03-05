@@ -230,4 +230,27 @@ public class ProjectGroupDbManager {
     }
     return pgid;
   }
+
+  /**
+   * get pid by id
+   * 
+   * @param id id
+   * @return pid
+   */
+  public List<Integer> getPgids() {
+    List<Integer> pgids = new ArrayList<>();
+    String sql = "SELECT id FROM Project_Group";
+    try (Connection conn = database.getConnection();
+        PreparedStatement preStmt = conn.prepareStatement(sql)) {
+      try (ResultSet rs = preStmt.executeQuery()) {
+        while (rs.next()) {
+          pgids.add(rs.getInt("id"));
+        }
+      }
+    } catch (SQLException e) {
+      LOGGER.debug(ExceptionUtil.getErrorInfoFromException(e));
+      LOGGER.error(e.getMessage());
+    }
+    return pgids;
+  }
 }

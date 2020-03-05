@@ -17,6 +17,10 @@ public class ProjectGroupDbService {
   private GroupDbManager gdb = GroupDbManager.getInstance();
   private ProjectGroupDbManager pgdb = ProjectGroupDbManager.getInstance();
 
+  public List<Integer> getPgids() {
+    return pgdb.getPgids();
+  }
+
   public List<Integer> getPgids(int gid) {
     return pgdb.getPgids(gid);
   }
