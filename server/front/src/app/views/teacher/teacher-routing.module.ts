@@ -5,11 +5,12 @@ import { AssignmentManagementComponent } from './assignment-management/assignmen
 import { CreateAssignmentComponent } from './create-assignment/create-assignment.component';
 import { StudentManagementComponent } from './student-management/student-management.component';
 import { GroupManagementComponent } from './group-management/group-management.component';
-import { ChartComponent } from './chart/chart.component';
 import { GroupDashboardComponent } from './group-dashboard/group-dashboard.component';
 import { SharedModule } from '../shared/shared.module';
-import { AssignmentChoosedComponent } from '../shared/assignment-choosed/assignment-choosed.component';
-import { ProjectChoosedComponent } from '../shared/project-choosed/project-choosed.component';
+
+import { ChartComponent } from '../shared/chart/chart.component';
+import { AssignmentChooseComponent } from '../shared/assignment-choose/assignment-choose.component';
+import { ProjectChooseComponent } from '../shared/project-choose/project-choose.component';
 import { EditGroupManagementComponent } from './edit-group-management/edit-group-management.component';
 import { CreateGroupComponent } from './create-group/create-group.component';
 const routes: Routes = [
@@ -21,15 +22,15 @@ const routes: Routes = [
     },
   },
   {
-    path: 'assignmentChoosed',
-    component: AssignmentChoosedComponent,
+    path: 'assignmentChoose',
+    component: AssignmentChooseComponent,
     data: {
-      title: 'Assignment Choosed'
+      title: 'Assignment Choose'
     }
   },
   {
-    path: 'projectChoosed',
-    component: ProjectChoosedComponent,
+    path: 'projectChoose',
+    component: ProjectChooseComponent,
     data: {
       title: 'Project Choosed'
     }

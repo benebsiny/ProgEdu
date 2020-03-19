@@ -3,6 +3,8 @@ import { ModalDirective } from 'ngx-bootstrap/modal';
 import { Router } from '@angular/router';
 import { AssignmentManagementService } from './assignment-management.service';
 import { FormBuilder, Validators, FormGroup } from '@angular/forms';
+import { TimeService } from '../../../services/time.service'
+import { HttpErrorResponse } from '@angular/common/http';
 
 @Component({
   selector: 'app-assignment-management',
@@ -15,13 +17,17 @@ export class AssignmentManagementComponent implements OnInit {
   assignmentName: string;
   assignmentForm: FormGroup;
 
+  errorResponse: HttpErrorResponse;
+  errorTitle: string;
+
   max: number = 100;
   showWarning: boolean;
   dynamic: number = 0;
   type: string = 'Waiting';
   isDeleteProgress = false;
 
-  constructor(private assignmentService: AssignmentManagementService, private router: Router, private fb: FormBuilder) { }
+  constructor(private assignmentService: AssignmentManagementService, private router: Router,
+    private fb: FormBuilder, private timeService: TimeService) { }
 
   ngOnInit() {
     this.getAllAssignments();
@@ -72,19 +78,12 @@ export class AssignmentManagementComponent implements OnInit {
       this.assignments = response.allAssignments;
       for (const i in this.assignments) {
         if (i) {
-          this.assignments[i].createTime = this.getUTCAdjustTime(this.assignments[i].createTime);
-          this.assignments[i].releaseTime = this.getUTCAdjustTime(this.assignments[i].releaseTime);
-          this.assignments[i].deadline = this.getUTCAdjustTime(this.assignments[i].deadline);
+          this.assignments[i].createTime = this.timeService.getUTCTime(this.assignments[i].createTime);
+          this.assignments[i].releaseTime = this.timeService.getUTCTime(this.assignments[i].releaseTime);
+          this.assignments[i].deadline = this.timeService.getUTCTime(this.assignments[i].deadline);
         }
       }
     });
-  }
-
-  getUTCAdjustTime(time: any): Date {
-    const timeOffset = (new Date().getTimezoneOffset() * 60 * 1000);
-    const assigenmentTime = new Date(time).getTime();
-
-    return new Date(assigenmentTime - timeOffset);
   }
 
   deleteAssignment() {
@@ -97,7 +96,9 @@ export class AssignmentManagementComponent implements OnInit {
         this.isDeleteProgress = false;
       },
       error => {
-        console.log(error);
+        this.errorTitle = 'Delete Assignment Error';
+        this.deleteModal.hide();
+        this.errorResponse = error;
       });
   }
 
@@ -115,8 +116,8 @@ export class AssignmentManagementComponent implements OnInit {
     if (assignment) {
       this.assignmentName = assignment.name;
       this.assignmentForm.get('description').setValue(assignment.description);
-      this.assignmentForm.get('releaseTime').setValue(this.getUTCAdjustTime(assignment.releaseTime).toISOString().slice(0, 17) + '00');
-      this.assignmentForm.get('deadline').setValue(this.getUTCAdjustTime(assignment.deadline).toISOString().slice(0, 17) + '00');
+      this.assignmentForm.get('releaseTime').setValue(this.timeService.getUTCTime(assignment.releaseTime).toISOString().slice(0, 17) + '00');
+      this.assignmentForm.get('deadline').setValue(this.timeService.getUTCTime(assignment.deadline).toISOString().slice(0, 17) + '00');
     }
   }
 
@@ -129,8 +130,10 @@ export class AssignmentManagementComponent implements OnInit {
           this.editModal.hide();
           this.getAllAssignments();
         },
-        errpr => {
-
+        error => {
+          this.errorTitle = 'Edit Assignment Error';
+          this.editModal.hide();
+          this.errorResponse = error;
         });
     }
   }

@@ -3,9 +3,8 @@
     <div class='card-header'>
       <div class='input-group'>
         <span class="input-group-prepend">
-          <button class="btn btn-primary" type="button" [disabled]='true'><i class="fa fa-search"></i>
-            Search</button></span>
-        <input type='text' class='form-control col-md-2' [(ngModel)]='search'>
+          <button class="btn btn-primary" type="button" [disabled]='true'><i class="fa fa-search"></i></button></span>
+        <input type='text' placeholder="Search" class='form-control col-md-2' [(ngModel)]='search'>
         <div class='ml-auto'>
           <span class="ovol NB">
             Not Build
@@ -46,7 +45,7 @@
               <p id="{{student.username}}_{{commit.assignmentName}}" class="circle {{commit.commitRecord.status}}">
                 <a *ngIf='!isNA(commit)'
                   id="{{student.username}}_{{commit.assignmentName}}_{{commit.commitRecord.commitNumber}}"
-                  href="#/dashboard/assignmentChoosed?username={{student.username}}&assignmentName={{commit.assignmentName}}">{{commit.commitRecord.commitNumber}}</a>
+                  href="#/dashboard/assignmentChoose?username={{student.username}}&assignmentName={{commit.assignmentName}}">{{commit.commitRecord.commitNumber}}</a>
                 <a *ngIf='isNA(commit)'>N/A</a>
               </p>
             </th>

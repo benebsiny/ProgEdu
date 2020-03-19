@@ -7,8 +7,10 @@ const commitRow = 5;
 })
 export class CommitRecordComponent implements OnInit, OnChanges {
   @Input() type: string;
+  @Input() showCommiter: boolean = false;
   @Input() commits: Array<any>;
   @Input() feedbacks: JSON;
+  @Input() screenshotUrls: Array<any>;
   @Output() messageToEmit = new EventEmitter<string>();
   displayCommits: Array<any>;
   currentPagination: number = 1;
@@ -57,6 +59,10 @@ export class CommitRecordComponent implements OnInit, OnChanges {
   updateFeedback(commitNumber: number) {
     this.commitNumber = commitNumber;
     this.messageToEmit.emit(commitNumber.toString());
+  }
+
+  isShowScreenshot(): Boolean {
+    return (this.type === 'WEB' || this.type === 'ANDROID');
   }
 
 }

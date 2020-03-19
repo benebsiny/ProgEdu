@@ -2,52 +2,69 @@ package fcu.selab.progedu.status;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import fcu.selab.progedu.data.FeedBack;
 
+import fcu.selab.progedu.utils.ExceptionUtil;
 import org.codehaus.jackson.JsonGenerationException;
 import org.codehaus.jackson.map.JsonMappingException;
 import org.codehaus.jackson.map.ObjectMapper;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class MavenUnitTestFailure implements Status {
+
+  private static final Logger LOGGER = LoggerFactory.getLogger(MavenUnitTestFailure.class);
+
   @Override
   public String extractFailureMsg(String consoleText) {
-    String unitTest = "";
-    String startStr = "Failed tests:";
-    String goal = "Tests run:";
-    int goalStr = consoleText.indexOf(goal, consoleText.indexOf(goal) + 1);
+    try {
+      String unitTest = "";
+      String startString = "Failed tests:";
+      String endString = "Tests run:";
 
-    unitTest = consoleText.substring(consoleText.indexOf(startStr), goalStr - 1);
-    //<, > will be HTML tag, change to the " 
-    unitTest = unitTest.replaceAll("<", "\"").replaceAll(">", "\"");
-    
-    return unitTest.trim();
+      unitTest = consoleText.substring(consoleText.indexOf(startString),
+          consoleText.indexOf(endString, consoleText.indexOf(startString)));
+
+      return unitTest;
+    } catch (Exception e) {
+      LOGGER.debug(ExceptionUtil.getErrorInfoFromException(e));
+      LOGGER.error(e.getMessage());
+      return "ExtractFailureMsg Method Error";
+    }
   }
 
   @Override
   public ArrayList<FeedBack> formatExamineMsg(String consoleText) {
-    consoleText = consoleText + "\n";
-    int endIndex = consoleText.length();
-    ArrayList<FeedBack> feedbacklist = new ArrayList<>();
-    while (consoleText.indexOf("Failed tests:") != -1) {
-      int nextrow = consoleText.indexOf("\n");
-      int nextfailedtest = consoleText.indexOf("Failed tests:");
-      if (nextfailedtest > nextrow) {
-        consoleText = consoleText.substring(nextrow + 1, endIndex);
-        endIndex = endIndex - nextrow - 1;
-      } else {
-        int nextcolon = consoleText.indexOf(":", 13);
-        feedbacklist.add(new FeedBack(
-            StatusEnum.UNIT_TEST_FAILURE,
-            "",
-            consoleText.substring(nextcolon + 1, nextrow).trim(),
-            "",
-            ""
-        ));
-        consoleText = consoleText.substring(nextrow + 1, endIndex);
-        endIndex = endIndex - nextrow - 1;
+    String suggest = "https://www.learnjavaonline.org/";
+    ArrayList<FeedBack> feedbackList = new ArrayList<>();
+    try {
+      Pattern pattern = Pattern.compile("(.*?)((\\()(.*?)(\\)))(.*?)(\n)");
+      Matcher matcher = pattern.matcher(consoleText);
+      while (matcher.find()) {
+        String message;
+        String fileName = matcher.group(4).replaceAll("\\.", "/");
+        if (matcher.group(6).contains(":")) {
+          message = matcher.group(6).substring(matcher.group(6).indexOf(":") + 1);
+        } else {
+          message = matcher.group(6);
+        }
+        feedbackList.add(new FeedBack(
+              StatusEnum.UNIT_TEST_FAILURE, fileName, "", message.trim(), "", suggest
+          ));
       }
+      if (feedbackList.isEmpty()) {
+        feedbackList.add(
+            new FeedBack(StatusEnum.UNIT_TEST_FAILURE,
+                "Please notify teacher or assistant this situation, thank you!", ""));
+      }
+    } catch (Exception e) {
+      feedbackList.add(
+          new FeedBack(StatusEnum.UNIT_TEST_FAILURE,
+              "UnitTest ArrayList error", e.getMessage()));
     }
-    return feedbacklist;
+    return feedbackList;
   }
 }

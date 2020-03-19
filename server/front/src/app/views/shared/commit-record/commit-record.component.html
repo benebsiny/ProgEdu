@@ -24,6 +24,9 @@
       <span class="ovol UTF">
         Unit Test Failure
       </span>
+      <span *ngIf="type === 'ANDROID'" class="ovol UITF">
+        UI Test Failure
+      </span>
       <span class="ovol BS">
         Build Success
       </span>
@@ -37,6 +40,8 @@
             <th>Light </th>
             <th>Date</th>
             <th>Commit Message</th>
+            <th *ngIf='showCommiter'>Committer</th>
+            <th *ngIf="isShowScreenshot()">Screenshot</th>
           </tr>
         </thead>
         <tbody>
@@ -47,6 +52,9 @@
             </td>
             <td class='w-25'>{{commit.time | date:'short'}}</td>
             <td class='w-50'>{{commit.message}}</td>
+            <td *ngIf='showCommiter'>{{commit.committer}}</td>
+            <td *ngIf="isShowScreenshot()"><button class="btn btn-primary" (click)='screenshot.screenshotModal.show();'>
+                <i class="cui-screen-desktop"></i></button></td>
           </tr>
         </tbody>
       </table>
@@ -63,21 +71,35 @@
     <span><a>
         <h3>Feedback Information {{commitNumber}}</h3>
       </a></span>
-    <table class='table table-responsive-sm table-bordered table-hover table-outline mb-0 text-center'>
+    <table class='table table-responsive-sm table-bordered table-hover table-outline'>
       <thead class="thead-light">
         <tr>
+          <th class='w-20'>fileName</th>
           <th class='w-10'>Line</th>
-          <th class='w-50'>Message</th>
-          <th>Symptom</th>
+          <th class='w-30'>Message</th>
+          <th class='w-30'>Symptom</th>
           <th>Suggest</th>
         </tr>
       </thead>
       <tr *ngFor="let feedback of feedbacks" id='feedback-bar'>
-        <td>{{feedback.line}}</td>
-        <td>{{feedback.message}}</td>
-        <td>{{feedback.symptom}}</td>
-        <td><a href='{{feedback.suggest}}' target="blank">{{feedback.suggest}}</a></td>
+        <td>
+          <pre>{{feedback.fileName}}</pre>
+        </td>
+        <td>
+          <pre>{{feedback.line}}</pre>
+        </td>
+        <td>
+          <pre [innerHTML]='feedback.message | lineBreaks'></pre>
+        </td>
+        <td>
+          <pre>{{feedback.symptom}}</pre>
+        </td>
+        <td>
+          <pre><a href='{{feedback.suggest}}' target="blank">{{feedback.suggest}}</a></pre>
+        </td>
       </tr>
     </table>
   </div>
 </div>
+<app-screenshot [screenshotUrls]=screenshotUrls [commitNumber]=commitNumber [type]=type #screenshot>
+</app-screenshot>

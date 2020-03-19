@@ -2,8 +2,8 @@ import { NgModule } from '@angular/core';
 import { Routes, RouterModule } from '@angular/router';
 import { StudashboardComponent } from './studashboard/studashboard.component';
 import { SharedModule } from '../shared/shared.module';
-import { AssignmentChoosedComponent } from '../shared/assignment-choosed/assignment-choosed.component';
-import { ProjectChoosedComponent } from '../shared/project-choosed/project-choosed.component';
+import { AssignmentChooseComponent } from '../shared/assignment-choose/assignment-choose.component';
+import { ProjectChooseComponent } from '../shared/project-choose/project-choose.component';
 import { GroupStudashboardComponent } from './group-studashboard/group-studashboard.component';
 const routes: Routes = [
   {
@@ -14,8 +14,8 @@ const routes: Routes = [
     }
   },
   {
-    path: 'assignmentChoosed',
-    component: AssignmentChoosedComponent,
+    path: 'assignmentChoose',
+    component: AssignmentChooseComponent,
     data: {
       title: 'Assignment Choose'
     }
@@ -24,12 +24,12 @@ const routes: Routes = [
     path: 'groupStuDashboard',
     component: GroupStudashboardComponent,
     data: {
-      title: 'Project Choosed'
+      title: 'Project Dashboard'
     }
   },
   {
-    path: 'projectChoosed',
-    component: ProjectChoosedComponent,
+    path: 'projectChoose',
+    component: ProjectChooseComponent,
     data: {
       title: 'Project Choosed'
     }

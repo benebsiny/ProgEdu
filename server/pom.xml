@@ -20,6 +20,10 @@
     <url>
         http://maven.apache.org
     </url>
+    <properties>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+    </properties>
     <dependencies>
         <dependency>
             <groupId>
@@ -55,7 +59,7 @@
                 java-gitlab-api
             </artifactId>
             <version>
-                1.2.7
+                4.1.1
             </version>
         </dependency>
         <!-- java Http Client -->
@@ -475,31 +479,6 @@
                         </goals>
                     </execution>
                 </executions>
-            </plugin>
-            <plugin>
-                <groupId>
-                    org.apache.tomcat.maven
-                </groupId>
-                <artifactId>
-                    tomcat7-maven-plugin
-                </artifactId>
-                <version>
-                    2.2
-                </version>
-                <configuration>
-                    <url>
-                        http://140.134.26.78:8818/manager/text
-                    </url>
-                    <username>
-                        admin
-                    </username>
-                    <password>
-                        iecsfcu123456
-                    </password>
-                    <path>
-                        /ProgEdu
-                    </path>
-                </configuration>
             </plugin>
             <!-- angular front-end -->
             <plugin>

@@ -3,3 +3,6 @@ docs/
 .env
 *.swp
 .idea/
+*.iml
+*.log
+
