@@ -243,6 +243,18 @@ public class JenkinsService {
     return filterCommitMessage(getCompleteConsole(jobName, num));
   }
 
+  /**
+   * for rebuild
+   * 
+   * @param jobName    1
+   * @param num        1
+   * @param jenkinsUrl 1
+   * @return 1
+   */
+  public String getConsole(String jobName, int num, String jenkinsUrl) {
+    return filterCommitMessage(getCompleteConsole(jobName, num, jenkinsUrl));
+  }
+
   private String getCompleteConsole(String jobName, int num) {
     String consoleUrl = getConsoleUrl(jobName, num);
     String console = "";
@@ -257,6 +269,56 @@ public class JenkinsService {
       Base64.Encoder encoder = Base64.getEncoder();
       String encoding = "Basic " + encoder.encodeToString(input.getBytes());
       conn.setRequestProperty("Authorization", encoding);
+      conn.setReadTimeout(10000);
+      conn.setConnectTimeout(15000);
+      conn.setRequestMethod("GET");
+      conn.connect();
+      if (Thread.interrupted()) {
+        throw new InterruptedException();
+      }
+      try (BufferedReader br = new BufferedReader(
+          new InputStreamReader(conn.getInputStream(), "UTF-8"));) {
+        String str = "";
+        StringBuilder sb = new StringBuilder();
+        while (null != (str = br.readLine())) {
+          sb.append("\n");
+          sb.append(str);
+        }
+        console = sb.toString();
+      }
+    } catch (Exception e) {
+      LOGGER.debug(ExceptionUtil.getErrorInfoFromException(e));
+      LOGGER.error(e.getMessage());
+    } finally {
+      if (conn != null) {
+        conn.disconnect();
+      }
+    }
+    return console;
+  }
+
+  /**
+   * for rebuild
+   * 
+   * @param jobName    1
+   * @param num        1
+   * @param jenkinsUrl 1
+   * @return 1
+   */
+  private String getCompleteConsole(String jobName, int num, String jenkinsUrl) {
+    String consoleUrl = getConsoleUrl(jobName, num, jenkinsUrl);
+    String console = "";
+    HttpURLConnection conn = null;
+    try {
+      if (Thread.interrupted()) {
+        throw new InterruptedException();
+      }
+      URL url = new URL(consoleUrl);
+      conn = (HttpURLConnection) url.openConnection();
+      String input = jenkinsRootUsername + ":" + jenkinsRootPassword;
+      Base64.Encoder encoder = Base64.getEncoder();
+      String encoding = encoder.encodeToString(input.getBytes());
+      conn.setRequestProperty("Authorization", "Basic " + encoding);
       conn.setReadTimeout(10000);
       conn.setConnectTimeout(15000);
       conn.setRequestMethod("GET");
@@ -305,6 +367,18 @@ public class JenkinsService {
    */
   public String getConsoleUrl(String jobName, int num) {
     return (jenkinsRootUrl + "/job/" + jobName + "/" + num + "/consoleText");
+  }
+
+  /**
+   * for rebuild
+   * 
+   * @param jobName    (to do)
+   * @param num        (to do)
+   * @param jenkinsUrl 1
+   * @return consoleUrl (to do)
+   */
+  public String getConsoleUrl(String jobName, int num, String jenkinsUrl) {
+    return (jenkinsUrl + "/job/" + jobName + "/" + num + "/consoleText");
   }
 
   /**
@@ -361,77 +435,4 @@ public class JenkinsService {
 
   }
 
-  /**
-   * 1
-   * 
-   * @param jobName    1
-   * @param num        1
-   * @param jenkinsUrl 1
-   * @return 1
-   */
-  public String getConsole(String jobName, int num, String jenkinsUrl) {
-    return filterCommitMessage(getCompleteConsole(jobName, num, jenkinsUrl));
-  }
-
-  /**
-   * 1
-   * 
-   * @param jobName    1
-   * @param num        1
-   * @param jenkinsUrl 1
-   * @return 1
-   */
-  private String getCompleteConsole(String jobName, int num, String jenkinsUrl) {
-    String consoleUrl = getConsoleUrl(jobName, num, jenkinsUrl);
-    String console = "";
-    HttpURLConnection conn = null;
-    try {
-      if (Thread.interrupted()) {
-        throw new InterruptedException();
-      }
-      URL url = new URL(consoleUrl);
-      conn = (HttpURLConnection) url.openConnection();
-      String input = jenkinsRootUsername + ":" + jenkinsRootPassword;
-      Base64.Encoder encoder = Base64.getEncoder();
-      String encoding = encoder.encodeToString(input.getBytes());
-      conn.setRequestProperty("Authorization", "Basic " + encoding);
-      conn.setReadTimeout(10000);
-      conn.setConnectTimeout(15000);
-      conn.setRequestMethod("GET");
-      conn.connect();
-      if (Thread.interrupted()) {
-        throw new InterruptedException();
-      }
-      try (BufferedReader br = new BufferedReader(
-          new InputStreamReader(conn.getInputStream(), "UTF-8"));) {
-        String str = "";
-        StringBuilder sb = new StringBuilder();
-        while (null != (str = br.readLine())) {
-          sb.append("\n");
-          sb.append(str);
-        }
-        console = sb.toString();
-      }
-    } catch (Exception e) {
-      LOGGER.debug(ExceptionUtil.getErrorInfoFromException(e));
-      LOGGER.error(e.getMessage());
-    } finally {
-      if (conn != null) {
-        conn.disconnect();
-      }
-    }
-    return console;
-  }
-
-  /**
-   * (to do)
-   * 
-   * @param jobName    (to do)
-   * @param num        (to do)
-   * @param jenkinsUrl 1
-   * @return consoleUrl (to do)
-   */
-  public String getConsoleUrl(String jobName, int num, String jenkinsUrl) {
-    return (jenkinsUrl + "/job/" + jobName + "/" + num + "/consoleText");
-  }
 }

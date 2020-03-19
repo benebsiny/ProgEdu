@@ -1,12 +1,10 @@
 package fcu.selab.progedu.conn;
 
-
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.commons.io.IOUtils;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.NameValuePair;
@@ -15,7 +13,6 @@ import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.methods.HttpPut;
 import org.apache.http.impl.client.DefaultHttpClient;
-import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.message.BasicNameValuePair;
 import org.gitlab.api.AuthMethod;
@@ -27,8 +24,6 @@ import org.gitlab.api.models.GitlabGroup;
 import org.gitlab.api.models.GitlabGroupMember;
 import org.gitlab.api.models.GitlabProject;
 import org.gitlab.api.models.GitlabUser;
-import org.json.JSONObject;
-import org.json.JSONTokener;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -74,6 +69,7 @@ public class GitlabService {
 
   /**
    * Get root session from Gitlab
+   * 
    * @param userGitlabId user Gitlab Id
    * @return token
    */
@@ -152,7 +148,7 @@ public class GitlabService {
    * get gitlab project by username and projectName
    *
    * @param username username
-   * @param proName proName
+   * @param proName  proName
    * @return gitlabProject
    */
   public GitlabProject getProject(String username, String proName) {
@@ -205,6 +201,7 @@ public class GitlabService {
 
   /**
    * Get all user's list of projects
+   * 
    * @return projects
    */
   public List<GitlabProject> getAllProjects() {
@@ -246,6 +243,7 @@ public class GitlabService {
 
   /**
    * Get all user from Gitlab
+   * 
    * @return a list of users
    */
   public List<GitlabUser> getUsers() {
@@ -359,8 +357,8 @@ public class GitlabService {
   }
 
   /**
-   * @param username username
-   * @param proName proName
+   * @param username     username
+   * @param proName      proName
    * @param projectOwner project owner name
    * @return project
    * @throws IOException on gitlab api call error
@@ -562,6 +560,7 @@ public class GitlabService {
 
   /**
    * delete all gitlab projects
+   * 
    * @param name name
    */
   public void deleteProjects(String name) {
@@ -580,16 +579,16 @@ public class GitlabService {
 
   /**
    * Update user password
-   * @param userId user id
+   * 
+   * @param userId   user id
    * @param password user new password
    */
   public void updateUserPassword(int userId, String password) {
     GitlabUser user = new GitlabUser();
     try {
       user = gitlab.getUser(userId);
-      gitlab.updateUser(user.getId(), user.getEmail(), password, user.getUsername(),
-              user.getName(), null, null, null, null, 20, null, null,
-              null, false, true, false);
+      gitlab.updateUser(user.getId(), user.getEmail(), password, user.getUsername(), user.getName(),
+          null, null, null, null, 20, null, null, null, false, true, false);
     } catch (IOException e) {
       LOGGER.debug(ExceptionUtil.getErrorInfoFromException(e));
       LOGGER.error(e.getMessage());
@@ -620,12 +619,29 @@ public class GitlabService {
   /**
    * get commits from gitlab project. (to do)
    * 
-   * @param username project's (to do)
+   * @param username    project's (to do)
    * @param projectName project name
    * @return target
    */
   public String cloneProject(String username, String projectName) {
     String repoUrl = rootUrl + "/" + username + "/" + projectName + ".git";
+    String target = System.getProperty("java.io.tmpdir") + "/uploads/" + projectName;
+    String cloneCommand = "git clone " + repoUrl + " " + target;
+    Linux linux = new Linux();
+    linux.execLinuxCommand(cloneCommand);
+    return target;
+  }
+
+  /**
+   * for rebuild.
+   * get commits from gitlab project. 
+   * 
+   * @param username    project's (to do)
+   * @param projectName project's (to do)
+   * @param gitlabUrl   gitlabUrl
+   */
+  public String cloneProject(String username, String projectName, String gitlabUrl) {
+    String repoUrl = gitlabUrl + "/" + username + "/" + projectName + ".git";
     String target = System.getProperty("java.io.tmpdir") + "/uploads/" + projectName;
     String cloneCommand = "git clone " + repoUrl + " " + target;
     Linux linux = new Linux();
@@ -690,8 +706,8 @@ public class GitlabService {
     HttpClient client = new DefaultHttpClient();
     String url = "";
     try {
-      url = hostUrl + API_NAMESPACE + "/groups/" + groupId + "/projects/"
-              + projectId + "?private_token=" + apiToken;
+      url = hostUrl + API_NAMESPACE + "/groups/" + groupId + "/projects/" + projectId
+          + "?private_token=" + apiToken;
       HttpPost post = new HttpPost(url);
 
       HttpResponse response = client.execute(post);
@@ -747,22 +763,6 @@ public class GitlabService {
       LOGGER.error(e.getMessage());
     }
 
-  }
-
-  /**
-   * get commits from gitlab project. (to do)
-   * 
-   * @param username    project's (to do)
-   * @param projectName project's (to do)
-   * @param gitlabUrl
-   */
-  public String cloneProject(String username, String projectName, String gitlabUrl) {
-    String repoUrl = gitlabUrl + "/" + username + "/" + projectName + ".git";
-    String target = System.getProperty("java.io.tmpdir") + "/uploads/" + projectName;
-    String cloneCommand = "git clone " + repoUrl + " " + target;
-    Linux linux = new Linux();
-    linux.execLinuxCommand(cloneCommand);
-    return target;
   }
 
 }

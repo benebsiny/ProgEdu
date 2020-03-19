@@ -7,6 +7,12 @@ import fcu.selab.progedu.data.StudentCommitRecord;
 import fcu.selab.progedu.status.StatusEnum;
 
 public class ContributionAnalyzer {
+  /**
+   * Analyze commit behavior
+   * 
+   * @param crs  CommitRecord
+   * @param scrs StudentCommitRecord
+   */
   public void analyzeCommitBehavior(List<CommitRecord> crs, List<StudentCommitRecord> scrs) {
     CommitRecord prevCr = null;
     for (CommitRecord cr : crs) {
@@ -78,8 +84,9 @@ public class ContributionAnalyzer {
   private boolean isPartiallyFixed(StatusEnum prev, StatusEnum current) {
     switch (prev) {
       case WEB_HTMLHINT_FAILURE:
-        if (current == StatusEnum.WEB_STYLELINT_FAILURE)
+        if (current == StatusEnum.WEB_STYLELINT_FAILURE) {
           return true;
+        }
       case WEB_STYLELINT_FAILURE:
         return current == StatusEnum.WEB_ESLINT_FAILURE;
       default:
@@ -91,11 +98,13 @@ public class ContributionAnalyzer {
     switch (prev) {
       case INITIALIZATION:
       case BUILD_SUCCESS:
-        if (current == StatusEnum.WEB_ESLINT_FAILURE)
+        if (current == StatusEnum.WEB_ESLINT_FAILURE) {
           return true;
+        }
       case WEB_ESLINT_FAILURE:
-        if (current == StatusEnum.WEB_STYLELINT_FAILURE)
+        if (current == StatusEnum.WEB_STYLELINT_FAILURE) {
           return true;
+        }
       case WEB_STYLELINT_FAILURE:
         return current == StatusEnum.WEB_HTMLHINT_FAILURE;
       default:

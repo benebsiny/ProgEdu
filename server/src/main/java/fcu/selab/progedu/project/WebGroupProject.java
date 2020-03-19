@@ -13,10 +13,10 @@ import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 
-import org.w3c.dom.Document;
-import org.xml.sax.SAXException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.w3c.dom.Document;
+import org.xml.sax.SAXException;
 
 import fcu.selab.progedu.config.CourseConfig;
 import fcu.selab.progedu.config.GitlabConfig;
@@ -56,7 +56,7 @@ public class WebGroupProject extends GroupProjectType {
           + ".git";
 
       DocumentBuilderFactory docFactory = DocumentBuilderFactory.newInstance();
-      docFactory.setFeature("http://apache.org/xml/features/disallow-doctype-decl",true);
+      docFactory.setFeature("http://apache.org/xml/features/disallow-doctype-decl", true);
       DocumentBuilder docBuilder = docFactory.newDocumentBuilder();
 
       String updateDbUrl = progEduApiUrl + "/commits/update";
@@ -65,13 +65,13 @@ public class WebGroupProject extends GroupProjectType {
 
       Document doc = docBuilder.parse(jenkinsJobConfigPath);
       doc.getElementsByTagName("url").item(0).setTextContent(projectUrl);
-      doc.getElementsByTagName("seleniumUrl").item(0).setTextContent(seleniumUrl);
+//      doc.getElementsByTagName("seleniumUrl").item(0).setTextContent(seleniumUrl);
       doc.getElementsByTagName("progeduDbUrl").item(0).setTextContent(updateDbUrl);
       doc.getElementsByTagName("user").item(0).setTextContent(username);
       doc.getElementsByTagName("proName").item(0).setTextContent(projectName);
-      doc.getElementsByTagName("progeduAPIUrl").item(0).setTextContent(progEduApiUrl);
-      doc.getElementsByTagName("jenkinsUsername").item(0).setTextContent(username);
-      doc.getElementsByTagName("jenkinsAssignmentName").item(0).setTextContent(projectName);
+//      doc.getElementsByTagName("progeduAPIUrl").item(0).setTextContent(progEduApiUrl);
+//      doc.getElementsByTagName("jenkinsUsername").item(0).setTextContent(username);
+//      doc.getElementsByTagName("jenkinsAssignmentName").item(0).setTextContent(projectName);
 
       // write the content into xml file
       TransformerFactory transformerFactory = TransformerFactory.newInstance();
