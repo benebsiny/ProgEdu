@@ -207,4 +207,21 @@ public class ProjectDbService {
     int pid = pdb.getId(projectName, url);
     return pgdb.getId(gid, pid, url);
   }
+
+  /**
+   * insert project commit record
+   * 
+   * @param pgId         project_group id
+   * @param commitNumber commit number
+   * @param status       status
+   * @param time         time
+   * @param committer    committer
+   */
+  public void updateRevisionNumber(int pgId, int commitNumber, String revisionNumber) {
+    int id = pcrdb.getProjectCommitRecordId(pgId, commitNumber);
+    System.out.print("\tid : " + id);
+    System.out.print("\tpgId : " + pgId);
+    System.out.println("\tcommitNumber : " + commitNumber);
+    pcrdb.updateRevisionNumber(id, revisionNumber);
+  }
 }

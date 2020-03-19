@@ -208,6 +208,7 @@ public class ProjectCommitRecordDbManager {
           cr.setCommitter(committer);
           cr.setNumber(commitNumber);
           cr.setTime(commitTime);
+          cr.setAuId(pgId);
         }
       }
     } catch (SQLException e) {
@@ -435,4 +436,29 @@ public class ProjectCommitRecordDbManager {
 //    }
 
   }
+
+  /**
+   * insert revision number
+   *
+   * @param id             id
+   * @param revisionNumber revision number
+   */
+  public void updateRevisionNumber(int id, String revisionNumber) {
+    String sql = "UPDATE Project_Commit_Record SET revisionNumber = ? WHERE id = ?";
+//    int statusId = csDb.getStatusIdByName(status.getType());
+//    Timestamp date = new Timestamp(time.getTime());
+    try (Connection conn = database.getConnection();
+        PreparedStatement preStmt = conn.prepareStatement(sql)) {
+      preStmt.setString(1, revisionNumber);
+      preStmt.setInt(2, id);
+//      preStmt.setInt(3, statusId);
+//      preStmt.setTimestamp(4, date);
+//      preStmt.setString(5, commitStudent);
+      preStmt.executeUpdate();
+    } catch (SQLException e) {
+      LOGGER.debug(ExceptionUtil.getErrorInfoFromException(e));
+      LOGGER.error(e.getMessage());
+    }
+  }
+
 }
