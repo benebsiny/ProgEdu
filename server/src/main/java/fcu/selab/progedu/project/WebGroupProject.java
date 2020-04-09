@@ -62,9 +62,11 @@ public class WebGroupProject extends GroupProjectType {
       String updateDbUrl = progEduApiUrl + "/commits/update";
       JenkinsConfig jenkinsData = JenkinsConfig.getInstance();
       String seleniumUrl = jenkinsData.getSeleniumHostUrl() + "/wd/hub";
+      String jobName = username + "_" + projectName;
 
       Document doc = docBuilder.parse(jenkinsJobConfigPath);
       doc.getElementsByTagName("url").item(0).setTextContent(projectUrl);
+      doc.getElementsByTagName("jobName").item(0).setTextContent(jobName);
 //      doc.getElementsByTagName("seleniumUrl").item(0).setTextContent(seleniumUrl);
       doc.getElementsByTagName("progeduDbUrl").item(0).setTextContent(updateDbUrl);
       doc.getElementsByTagName("user").item(0).setTextContent(username);

@@ -633,8 +633,7 @@ public class GitlabService {
   }
 
   /**
-   * for rebuild.
-   * get commits from gitlab project. 
+   * for rebuild. get commits from gitlab project.
    * 
    * @param username    project's (to do)
    * @param projectName project's (to do)

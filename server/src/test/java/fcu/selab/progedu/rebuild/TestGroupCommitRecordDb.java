@@ -39,6 +39,32 @@ public class TestGroupCommitRecordDb {
   }
 
   @Test
+  public void getInfo() {
+    String groupName = "TeamA2";
+    String projectName = "ProjectA2";
+//    List<Integer> pgids = pgdm.getPgids();
+    int pgid = pgdm.getId(groupName, projectName);
+    List<CommitRecord> crs = pdm.getCommitRecords(pgid);
+//    System.out.println(crs.toString());
+    List<StudentCommitRecord> scrs = crdm.getCommitStatusPerStudent(pgid);
+//  crdm.getCommitStatusPerStudent();
+    crdm.getCommitFrequencyPerStudent(scrs, pgid);
+//    System.out.println(scrs.size());
+
+//    List<StudentCommitRecord> delete = new ArrayList<>();
+//    List<CommitRecord> crs = pdm.getCommitRecords(pgid);
+//      for (int index = 0 ; index < scrs.size(); index++) {
+//        System.out.println("1");
+//        if (scrs.get(index).getPgId() != pgid) {
+//        }
+//      }
+//      System.out.println(scrs.size());
+    ca.analyzeCommitBehavior(crs, scrs);
+
+    System.out.println(scrs.toString());
+  }
+
+//  @Test
   public void test() {
 //    String groupName = "TeamA1";
 //    String projectName = "ProjectA1";

@@ -22,7 +22,7 @@ public abstract class ProjectTypeImp implements ProjectType {
     String jobName = jenkins.getJobName(username, projectName);
     createJenkinsJobConfig(username, projectName);
     jenkins.createJob(jobName, jenkinsJobConfigPath);
-    jenkins.buildJob(jobName);
+//    jenkins.buildJob(jobName);
 
   }
 

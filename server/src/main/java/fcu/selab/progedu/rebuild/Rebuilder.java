@@ -49,7 +49,6 @@ public class Rebuilder {
    * @param projectType projectType
    */
   public void createGroupProject(String groupName, String projectName) {
-    projectName = projectName + "-rebuild";
     String readMe = "rebuild";
 
     final GroupProjectType groupProject = new RebuildGroupProject();

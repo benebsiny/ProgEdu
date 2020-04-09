@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -69,6 +70,34 @@ public class ProjectCommitRecordDbManager {
     String query = "SELECT id FROM Project_Commit_Record where pgId = ? and commitNumber = ?";
     int id = 0;
     try (Connection conn = database.getConnection();
+        PreparedStatement preStmt = conn.prepareStatement(query)) {
+      preStmt.setInt(1, pgId);
+      preStmt.setInt(2, commitNumber);
+
+      try (ResultSet rs = preStmt.executeQuery();) {
+        if (rs.next()) {
+          id = rs.getInt("id");
+        }
+      }
+    } catch (SQLException e) {
+      LOGGER.debug(ExceptionUtil.getErrorInfoFromException(e));
+      LOGGER.error(e.getMessage());
+    }
+
+    return id;
+  }
+
+  /**
+   * get project's CommitRecordId
+   *
+   * @param pgId         Project_Commit_Record pgId
+   * @param commitNumber commit number
+   * @return id
+   */
+  public int getProjectCommitRecordId(int pgId, int commitNumber, String url) {
+    String query = "SELECT id FROM Project_Commit_Record where pgId = ? and commitNumber = ?";
+    int id = 0;
+    try (Connection conn = ((MySqlDatabase) database).getConnection(url);
         PreparedStatement preStmt = conn.prepareStatement(query)) {
       preStmt.setInt(1, pgId);
       preStmt.setInt(2, commitNumber);
@@ -437,6 +466,115 @@ public class ProjectCommitRecordDbManager {
 
   }
 
+  public List<StudentCommitRecord> getCommitStatusPerStudent(int pgId) {
+    List<StudentCommitRecord> scrs = new ArrayList<>();
+    String query = "SELECT commitStudent, status, count(*) FROM ProgEdu.Project_Commit_Record where status <> 4 AND pgId = ? group by commitStudent, status;";
+
+    try (Connection conn = database.getConnection();
+        PreparedStatement preStmt = conn.prepareStatement(query)) {
+      preStmt.setInt(1, pgId);
+      try (ResultSet rs = preStmt.executeQuery();) {
+        while (rs.next()) {
+//          int pgId = rs.getInt("pgId");
+          String commitStudent = rs.getString("commitStudent");
+          int status = rs.getInt("status");
+          int times = rs.getInt("count(*)");
+//          System.out.println(pgId + "\t" + commitStudent + "\t" + status + "\t" + times);
+          StudentCommitRecord scr;
+          if (scrs.size() > 0 && scrs.get(scrs.size() - 1).getName().equals(commitStudent)
+              && scrs.get(scrs.size() - 1).getPgId() == pgId) {
+            scr = scrs.get(scrs.size() - 1);
+          } else {
+            scr = new StudentCommitRecord(pgId, commitStudent);
+            scrs.add(scr);
+          }
+
+          switch (status) {
+            case 1:
+              scrs.get(scrs.size() - 1).setNumOfBs(times);
+              break;
+            case 6:
+              scrs.get(scrs.size() - 1).setNumOfWhf(times);
+              break;
+            case 7:
+              scrs.get(scrs.size() - 1).setNumOfWsf(times);
+              break;
+            case 8:
+              scrs.get(scrs.size() - 1).setNumOfWef(times);
+              break;
+            default:
+              break;
+          }
+
+//          System.out.print(pgId + ", ");
+//          System.out.print(commitStudent + ", ");
+//          System.out.print(status + ", ");
+//          System.out.println(count);
+        }
+      }
+    } catch (SQLException e) {
+      LOGGER.debug(ExceptionUtil.getErrorInfoFromException(e));
+      LOGGER.error(e.getMessage());
+    }
+//    System.out.println(scrs.size());
+//    for (StudentCommitRecord scr : scrs) {
+//      System.out.println(scr.toString());
+//    }
+    return scrs;
+  }
+
+  /**
+   * get project's Commit status per student
+   * 
+   * @return id
+   */
+  public void getCommitFrequencyPerStudent(List<StudentCommitRecord> scrs, int pgId) {
+//    List<StudentCommitRecord> scrs = new ArrayList<>();
+    String query = "SELECT pgId, commitStudent, time FROM ProgEdu.Project_Commit_Record where status <> 4 AND pgId = ? group by commitStudent, ProgEdu.Project_Commit_Record.time;";
+    try (Connection conn = database.getConnection();
+        PreparedStatement preStmt = conn.prepareStatement(query)) {
+      preStmt.setInt(1, pgId);
+      try (ResultSet rs = preStmt.executeQuery();) {
+        while (rs.next()) {
+//          int pgId = rs.getInt("pgId");
+          String commitStudent = rs.getString("commitStudent");
+          Date time = rs.getTimestamp("time");
+//          System.out.print(pgId + ", ");
+//          System.out.print(commitStudent + ", ");
+//          System.out.println(time);
+//        System.out.println(count);
+//          int times = rs.getInt("count(*)");
+          StudentCommitRecord scr = null;
+          for (StudentCommitRecord cr : scrs) {
+            if (cr.getName().equals(commitStudent) && cr.getPgId() == pgId) {
+              scr = cr;
+              break;
+            }
+          }
+          if (scr == null) {
+            scr = new StudentCommitRecord(pgId, commitStudent);
+            scrs.add(scr);
+          }
+          scr.addCommitTime(time);
+
+//          System.out.print(pgId + ", ");
+//          System.out.print(commitStudent + ", ");
+//          System.out.print(status + ", ");
+//          System.out.println(count);
+        }
+      }
+    } catch (SQLException e) {
+      LOGGER.debug(ExceptionUtil.getErrorInfoFromException(e));
+      LOGGER.error(e.getMessage());
+    }
+//    System.out.println(scrs.size());
+//    for (StudentCommitRecord scr : scrs) {
+////      System.out.println(scr.toString());
+//      System.out.println(scr.getCommitFrequency() + "\n");
+//    }
+
+  }
+
   /**
    * insert revision number
    *
@@ -459,6 +597,78 @@ public class ProjectCommitRecordDbManager {
       LOGGER.debug(ExceptionUtil.getErrorInfoFromException(e));
       LOGGER.error(e.getMessage());
     }
+  }
+
+  public List<String> getRevisionNumbers(int pgId) {
+    String query = "SELECT revisionNumber FROM Project_Commit_Record where pgId = ?";
+    List<String> revisionNumbers = new ArrayList<>();
+
+    try (Connection conn = database.getConnection();
+        PreparedStatement preStmt = conn.prepareStatement(query)) {
+      preStmt.setInt(1, pgId);
+
+      try (ResultSet rs = preStmt.executeQuery();) {
+        while (rs.next()) {
+          String revisionNumber = rs.getString("revisionNumber");
+          if (StringUtils.isNotEmpty(revisionNumber)) {
+            revisionNumbers.add(revisionNumber);
+          }
+        }
+      }
+    } catch (SQLException e) {
+      LOGGER.debug(ExceptionUtil.getErrorInfoFromException(e));
+      LOGGER.error(e.getMessage());
+    }
+
+    return revisionNumbers;
+  }
+
+  /**
+   * insert revision number
+   *
+   * @param id             id
+   * @param revisionNumber revision number
+   */
+  public void updateCommitter(int id, String committer, String url) {
+    String sql = "UPDATE Project_Commit_Record SET commitStudent = ? WHERE id = ?";
+//    int statusId = csDb.getStatusIdByName(status.getType());
+//    Timestamp date = new Timestamp(time.getTime());
+    try (Connection conn = ((MySqlDatabase) database).getConnection(url);
+        PreparedStatement preStmt = conn.prepareStatement(sql)) {
+      preStmt.setString(1, committer);
+      preStmt.setInt(2, id);
+//      preStmt.setInt(3, statusId);
+//      preStmt.setTimestamp(4, date);
+//      preStmt.setString(5, commitStudent);
+      preStmt.executeUpdate();
+    } catch (SQLException e) {
+      LOGGER.debug(ExceptionUtil.getErrorInfoFromException(e));
+      LOGGER.error(e.getMessage());
+    }
+  }
+
+  public List<String> getCommitters(int pgId) {
+    String query = "SELECT commitStudent FROM Project_Commit_Record where pgId = ?";
+    List<String> committers = new ArrayList<>();
+
+    try (Connection conn = database.getConnection();
+        PreparedStatement preStmt = conn.prepareStatement(query)) {
+      preStmt.setInt(1, pgId);
+
+      try (ResultSet rs = preStmt.executeQuery();) {
+        while (rs.next()) {
+          String committer = rs.getString("commitStudent");
+          if (StringUtils.isNotEmpty(committer)) {
+            committers.add(committer);
+          }
+        }
+      }
+    } catch (SQLException e) {
+      LOGGER.debug(ExceptionUtil.getErrorInfoFromException(e));
+      LOGGER.error(e.getMessage());
+    }
+
+    return committers;
   }
 
 }

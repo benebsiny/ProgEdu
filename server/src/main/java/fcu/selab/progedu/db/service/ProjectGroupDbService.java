@@ -50,4 +50,17 @@ public class ProjectGroupDbService {
     return pgdb.getId(gid, pid);
   }
 
+  /**
+   * get pgid
+   * 
+   * @param groupName   group name
+   * @param projectName project name
+   * @return project_group id
+   */
+  public int getId(String groupName, String projectName, String url) {
+    int gid = gdb.getId(groupName, url);
+    int pid = pdb.getId(projectName, url);
+    return pgdb.getId(gid, pid, url);
+  }
+
 }

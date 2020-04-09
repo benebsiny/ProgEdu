@@ -47,8 +47,7 @@ public class MySqlDbConfig {
   }
 
   /**
-   * for rebuild.
-   * Get database connection string
+   * for rebuild. Get database connection string
    * 
    * @param url 1
    * @return db_connection 1
@@ -142,5 +141,22 @@ public class MySqlDbConfig {
       return props.getProperty("DB_CONNECTION_OPTION").trim();
     }
     return "?relaxAutoCommit=true&useSSL=false&useUnicode=true&characterEncoding=utf-8";
+  }
+
+  /**
+   * Get database host
+   *
+   * @return database host
+   */
+  public String getDbHostRebuild() throws LoadConfigFailureException {
+    String dbHost = System.getenv("DB_HOST_REBUILD");
+    if (dbHost != null && !dbHost.equals("")) {
+      return dbHost;
+    }
+    if (props != null) {
+      return props.getProperty("DB_HOST_REBUILD").trim();
+    }
+    throw new LoadConfigFailureException(
+        "Unable to get config of MYSQL host from file;" + PROPERTY_FILE);
   }
 }
