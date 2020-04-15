@@ -231,17 +231,24 @@ public class ProjectDbService {
 
   }
 
-  public void updateCommitter(int pgId, int commitNumber, String committer, String url) {
+  public void updateCommitter(int pgId, int commitNumber, String committer, Date commitTime,
+      String url) {
     int id = pcrdb.getProjectCommitRecordId(pgId, commitNumber, url);
     System.out.print("\tid : " + id);
     System.out.print("\tpgId : " + pgId);
     System.out.println("\tcommitNumber : " + commitNumber);
-    pcrdb.updateCommitter(id, committer, url);
+    pcrdb.updateCommitter(id, committer, commitTime, url);
   }
 
   public List<String> getCommitters(int pgId) {
     System.out.print("\tpgId : " + pgId);
     return pcrdb.getCommitters(pgId);
+
+  }
+
+  public List<Date> getCommitTimes(int pgId) {
+    System.out.print("\tpgId : " + pgId);
+    return pcrdb.getCommitTimes(pgId);
 
   }
 

@@ -1,6 +1,9 @@
 package fcu.selab.progedu.rebuild;
 
+import java.util.Date;
 import java.util.List;
+
+import org.junit.Test;
 
 import fcu.selab.progedu.conn.GitlabService;
 import fcu.selab.progedu.conn.JenkinsService;
@@ -63,21 +66,24 @@ public class RebuilderTest {
     }
   }
 
-//  @Test
+  @Test
   public void updateCommitter() {
-    for (int i = 2; i < 15; i++) {
+    for (int i = 1; i < 15; i++) {
       String groupName = "TeamA" + i;
       String projectName = "ProjectA" + i;
       String dbUrl = "140.134.26.65:31003";
       int pgid = pgd.getId(groupName, projectName);
       List<String> committers = pdb.getCommitters(pgid);
+      List<Date> commitTimes = pdb.getCommitTimes(pgid);
       int commitNumber = 0;
 
       int rebuildPgid = pgd.getId(groupName, projectName, dbUrl);
-      for (String committer : committers) {
-        commitNumber++;
-        System.out.println("num : " + commitNumber + ", " + committer);
-        pdb.updateCommitter(rebuildPgid, commitNumber, committer, dbUrl);
+      for (int index = 0; index < committers.size(); index++) {
+        commitNumber = index + 1;
+        System.out.println(
+            "num : " + commitNumber + ", " + committers.get(index) + ", " + commitTimes.get(index));
+        pdb.updateCommitter(rebuildPgid, commitNumber, committers.get(index),
+            commitTimes.get(index), dbUrl);
       }
     }
 

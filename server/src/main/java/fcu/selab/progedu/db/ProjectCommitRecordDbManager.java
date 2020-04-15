@@ -629,14 +629,15 @@ public class ProjectCommitRecordDbManager {
    * @param id             id
    * @param revisionNumber revision number
    */
-  public void updateCommitter(int id, String committer, String url) {
-    String sql = "UPDATE Project_Commit_Record SET commitStudent = ? WHERE id = ?";
+  public void updateCommitter(int id, String committer, Date commitTime, String url) {
+    String sql = "UPDATE Project_Commit_Record SET commitStudent = ?, time = ? WHERE id = ?";
 //    int statusId = csDb.getStatusIdByName(status.getType());
-//    Timestamp date = new Timestamp(time.getTime());
+    Timestamp time = new Timestamp(commitTime.getTime());
     try (Connection conn = ((MySqlDatabase) database).getConnection(url);
         PreparedStatement preStmt = conn.prepareStatement(sql)) {
       preStmt.setString(1, committer);
-      preStmt.setInt(2, id);
+      preStmt.setTimestamp(2, time);
+      preStmt.setInt(3, id);
 //      preStmt.setInt(3, statusId);
 //      preStmt.setTimestamp(4, date);
 //      preStmt.setString(5, commitStudent);
@@ -669,6 +670,28 @@ public class ProjectCommitRecordDbManager {
     }
 
     return committers;
+  }
+
+  public List<Date> getCommitTimes(int pgId) {
+    String query = "SELECT time FROM Project_Commit_Record where pgId = ?";
+    List<Date> commitTimes = new ArrayList<>();
+
+    try (Connection conn = database.getConnection();
+        PreparedStatement preStmt = conn.prepareStatement(query)) {
+      preStmt.setInt(1, pgId);
+
+      try (ResultSet rs = preStmt.executeQuery();) {
+        while (rs.next()) {
+          Date commitTime = rs.getTimestamp("time");
+          commitTimes.add(commitTime);
+        }
+      }
+    } catch (SQLException e) {
+      LOGGER.debug(ExceptionUtil.getErrorInfoFromException(e));
+      LOGGER.error(e.getMessage());
+    }
+
+    return commitTimes;
   }
 
 }
